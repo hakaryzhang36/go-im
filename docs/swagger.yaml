@@ -1,0 +1,105 @@
+info:
+  contact: {}
+paths:
+  /index:
+    get:
+      description: 访问首页的接口
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 首页api
+      tags:
+      - index
+  /user/createUser:
+    post:
+      parameters:
+      - description: User Name
+        in: formData
+        name: name
+        type: string
+      - description: Password
+        in: formData
+        name: password
+        type: string
+      - description: Repeat Password
+        in: formData
+        name: password_repeat
+        type: string
+      - description: Email
+        in: formData
+        name: email
+        type: string
+      - description: Phone
+        in: formData
+        name: phone
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 新建用户
+      tags:
+      - userService
+  /user/deleteUser:
+    post:
+      parameters:
+      - description: User Id
+        in: formData
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 删除用户
+      tags:
+      - userService
+  /user/getUserList:
+    get:
+      description: get all users.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 获取所有用户
+      tags:
+      - userService
+  /user/updateUser:
+    post:
+      parameters:
+      - description: User Id
+        in: formData
+        name: id
+        type: string
+      - description: Name
+        in: formData
+        name: name
+        type: string
+      - description: Password
+        in: formData
+        name: password
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: 更新用户信息
+      tags:
+      - userService
+swagger: "2.0"
