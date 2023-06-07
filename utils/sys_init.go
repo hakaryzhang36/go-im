@@ -29,14 +29,14 @@ func InitConfig() {
 }
 
 func InitDB() {
-	add := viper.Get("mysql.address").(string)
-	port := viper.Get("mysql.port").(string)
-	username := viper.Get("mysql.username").(string)
-	password := viper.Get("mysql.password").(string)
-	database := viper.Get("mysql.database").(string)
-	charset := viper.Get("mysql.charset").(string)
-	parseTime := viper.Get("mysql.parseTime").(string)
-	loc := viper.Get("mysql.loc").(string)
+	add := viper.GetString("mysql.address")
+	port := viper.GetString("mysql.port")
+	username := viper.GetString("mysql.username")
+	password := viper.GetString("mysql.password")
+	database := viper.GetString("mysql.database")
+	charset := viper.GetString("mysql.charset")
+	parseTime := viper.GetString("mysql.parseTime")
+	loc := viper.GetString("mysql.loc")
 	dns := username + ":" + password + "@tcp(" + add + ":" + port + ")/" + database + "?charset=" + charset + "&parseTime=" + parseTime + "&loc=" + loc
 
 	// 自定义数据库日志，实现控制台打印log

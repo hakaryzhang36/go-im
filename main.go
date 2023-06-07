@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	initServer()
+	unitTest()
 
 }
 
@@ -21,5 +21,5 @@ func initServer() {
 }
 
 func unitTest() {
-	test.TestRedis()
+	test.TestGorm()
 }

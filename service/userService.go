@@ -42,7 +42,7 @@ func GetUserList(c *gin.Context) {
 // @Success 200 {string} success
 // @Router /user/createUser [post]
 func CreateUser(c *gin.Context) {
-	user := models.UserBasic{}
+	user := models.User{}
 	user.Name = c.PostForm("name")
 	password := c.PostForm("password")
 	password_repeat := c.PostForm("password_repeat")
@@ -103,7 +103,7 @@ func CreateUser(c *gin.Context) {
 // @Success 200 {string} success
 // @Router /user/deleteUser [post]
 func DeleteUser(c *gin.Context) {
-	user := models.UserBasic{}
+	user := models.User{}
 	id, _ := strconv.Atoi(c.PostForm("id"))
 	user.ID = uint(id)
 	_ = models.DeteleUser(user)
@@ -124,7 +124,7 @@ func DeleteUser(c *gin.Context) {
 // @Success 200 {string} success
 // @Router /user/updateUser [post]
 func UpdateUser(c *gin.Context) {
-	user := models.UserBasic{}
+	user := models.User{}
 	id, _ := strconv.Atoi(c.PostForm("id"))
 	user.ID = uint(id)
 	user.Name = c.PostForm("name")
