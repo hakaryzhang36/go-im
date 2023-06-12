@@ -1,7 +1,6 @@
 package models
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -91,6 +90,7 @@ func sendProc(node *Node) {
 		err := node.Conn.WriteMessage(websocket.TextMessage, data)
 		if err != nil {
 			fmt.Println("[WS] WriteMessage error: ", err)
+			return
 		}
 	}
 }
@@ -102,6 +102,7 @@ func recvProc(node *Node) {
 		_, data, err := node.Conn.ReadMessage()
 		if err != nil {
 			fmt.Println("[ws] ReadMessage error: ", err)
+			return
 		}
 		node.ReadDataQueue <- data // 将消息压入读缓冲区，交由其他协程处理
 	}
@@ -116,7 +117,7 @@ func recvHandlerData(node *Node) {
 		case data := <-node.ReadDataQueue:
 			fmt.Println("发送消息: ", data)
 			go dispatch(data) // ?
-		case <-time.NewTimer(10 * time.Second).C:
+		case <-time.NewTimer(100 * time.Second).C:
 			// 【TD】超时后处理
 			// 把写缓存中的消息全部发送出去
 			// 读缓存中消息全部存储
@@ -146,11 +147,14 @@ func (node *Node) CloseClient() {
 
 func dispatch(data []byte) {
 	msg := &Message{}
-	err := json.Unmarshal(data, msg)
-	if err != nil {
-		fmt.Println("Msg 格式错误: ", err)
-		return
-	}
+	msg.Content = string(data)
+	msg.RecvId = "222" // 接收方id
+	msg.Type = 1
+	// err := json.Unmarshal(data, msg)
+	// if err != nil {
+	// 	fmt.Println("Msg 格式错误: ", err)
+	// 	return
+	// }
 	switch msg.Type {
 	case 1:
 		sendMsg(msg.RecvId, data)

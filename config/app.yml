@@ -8,7 +8,7 @@ mysql:
   parseTime: True
   loc: Local
 redis:
-  addr: 172.30.255.250
+  addr: 172.30.253.46
   port: 6379
   password: 
   db: 0

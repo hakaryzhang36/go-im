@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	unitTest()
+	initServer()
 
 }
 

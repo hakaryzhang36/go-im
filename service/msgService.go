@@ -1,13 +1,11 @@
 package service
 
 import (
-	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"zhangteam.org/im-project/utils"
+	"zhangteam.org/im-project/models"
 )
 
 var upgrader = websocket.Upgrader{
@@ -29,38 +27,42 @@ var upgrader = websocket.Upgrader{
 // @Produce json
 // @Success 200 {string} success
 // @Router /msg/sendMsg [post]
+// func SendMsg(c *gin.Context) {
+// 	// msg, _ := strconv.Atoi(c.PostForm("msg"))
+
+// 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+// 	if err != nil {
+// 		log.Println(err)
+// 		return
+// 	}
+
+// 	go func() {
+// 		defer conn.Close()
+// 		for {
+// 			_, p, err := conn.ReadMessage()
+// 			fmt.Println("Send msg: ", string(p))
+// 			if err != nil {
+// 				log.Println(err)
+// 				return
+// 			} else {
+// 				utils.Publish(c, "channel-test", string(p))
+// 			}
+// 		}
+// 	}()
+
+// 	go func() {
+// 		defer conn.Close()
+// 		for {
+// 			bmsg, _ := utils.Subscribe(c, "channel-test")
+// 			back := []byte(bmsg)
+// 			if err := conn.WriteMessage(1, back); err != nil {
+// 				log.Println(err)
+// 			}
+// 		}
+// 	}()
+
+// }
+
 func SendMsg(c *gin.Context) {
-	// msg, _ := strconv.Atoi(c.PostForm("msg"))
-
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	go func() {
-		defer conn.Close()
-		for {
-			_, p, err := conn.ReadMessage()
-			fmt.Println("Send msg: ", string(p))
-			if err != nil {
-				log.Println(err)
-				return
-			} else {
-				utils.Publish(c, "channel-test", string(p))
-			}
-		}
-	}()
-
-	go func() {
-		defer conn.Close()
-		for {
-			bmsg, _ := utils.Subscribe(c, "channel-test")
-			back := []byte(bmsg)
-			if err := conn.WriteMessage(1, back); err != nil {
-				log.Println(err)
-			}
-		}
-	}()
-
+	models.Chat(c.Writer, c.Request)
 }
