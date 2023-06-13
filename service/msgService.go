@@ -65,15 +65,14 @@ var upgrader = websocket.Upgrader{
 // }
 
 // @BasePath
-// SendMsg
+// SendUserMsg
 // @Summary 建立websocket连接，启动通信相关后台资源
 // @Schemes
 // @Tags msgService
-// @Param msg formData string false "Message"
-
+// @Param id query string false "User Id"
 // @Produce json
 // @Success 200 {string} success
-// @Router /msg/sendMsg [post]
+// @Router /msg/SendUserMsg [get]
 func SendUserMsg(c *gin.Context) {
 	query := c.Request.URL.Query()
 	id := query.Get("id")
@@ -100,18 +99,7 @@ func SendUserMsg(c *gin.Context) {
 		WriteDataQueue: make(chan []byte, 1024),
 		ReadDataQueue:  make(chan []byte, 1024),
 	}
-	// 【TODO】将未读缓存加载进 Node
-	rwLocker.Lock()
-	clientMap[id] = node
-	rwLocker.Unlock()
 
-	// 启动协程进行放送、读取
-	go sendProc(node)
-	go recvProc(node)
-	go recvHandlerData(node)
-}
-
-// 用户进入系统后，生成后续连接的资源
-func Chat(writer http.ResponseWriter, request *http.Request) {
+	models.InitNode(node)
 
 }

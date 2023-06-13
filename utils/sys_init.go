@@ -63,7 +63,7 @@ func InitRedis() {
 
 	_, err := Rdb.Ping(ctx).Result()
 	if err == nil {
-		fmt.Println("Redis Server Connected, on", Rdb.Options().Addr)
+		fmt.Println("[Redis] Server Connected, on", Rdb.Options().Addr)
 	} else {
 		fmt.Println(err)
 	}

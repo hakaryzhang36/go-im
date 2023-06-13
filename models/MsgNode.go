@@ -13,8 +13,8 @@ import (
 type MsgNode struct {
 	Id             string
 	Conn           *websocket.Conn // 管道
-	WriteDataQueue chan []byte     // 写缓冲区
-	ReadDataQueue  chan []byte     // 读缓冲区
+	WriteDataQueue chan []byte     // 写缓冲区，发送到用户的消息
+	ReadDataQueue  chan []byte     // 读缓冲区，从用户发来的消息
 	//GroupSets set.Interface
 }
 
@@ -27,7 +27,7 @@ func (node *MsgNode) CloseClient() {
 	defer func() {
 		err := recover()
 		if nil != err {
-			log.Println("移除用户出错:用户id=", node.Id)
+			log.Println("关闭节点出错, id=", node.Id)
 		}
 	}()
 	if _, ok := clientMap[node.Id]; ok {
@@ -35,7 +35,7 @@ func (node *MsgNode) CloseClient() {
 		rwLocker.Lock()
 		delete(clientMap, node.Id)
 		rwLocker.Unlock()
-		log.Println("移除用户,用户id=", node.Id)
+		log.Println("关闭节点, id=", node.Id)
 	}
 }
 
@@ -57,7 +57,7 @@ func InitNode(node *MsgNode) {
 	go recvHandlerData(node)
 }
 
-// 发送协程，对通信节点循环操作，将消息写入写缓冲区
+// 发送协程，从写缓冲区中获取消息，通过ws发送
 func sendProc(node *MsgNode) {
 	defer node.CloseClient()
 	for data := range node.WriteDataQueue {
@@ -69,7 +69,7 @@ func sendProc(node *MsgNode) {
 	}
 }
 
-// 接收协程，对通信节点循环操作，从ws连接中接收消息，并写入读缓冲区
+// 接收协程，从ws连接中接收消息，并写入读缓冲区
 func recvProc(node *MsgNode) {
 	defer node.CloseClient()
 	for {
@@ -83,7 +83,6 @@ func recvProc(node *MsgNode) {
 }
 
 // 消息接收后的后端处理逻辑
-// 从读缓冲区中读取消息，并发送给目标ip
 func recvHandlerData(node *MsgNode) {
 	defer node.CloseClient()
 	for {
@@ -113,7 +112,7 @@ func dispatch(data []byte) {
 	// 	return
 	// }
 	switch msg.Type {
-	case 1:
+	case 1:	// 一对一私聊
 		sendMsg(msg.RecvId, data)
 
 	}

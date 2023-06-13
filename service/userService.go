@@ -7,6 +7,7 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/gin-gonic/gin"
 	"zhangteam.org/im-project/models"
+	"zhangteam.org/im-project/utils"
 )
 
 // @BasePath
@@ -24,6 +25,50 @@ func GetUserList(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message":  "success",
 		"userList": data,
+	})
+}
+
+// GetUserList
+// @Summary 所有用户
+// @Tags 用户模块
+// @param name query string false "用户名"
+// @param password query string false "密码"
+// @Success 200 {string} json{"code","message"}
+// @Router /user/findUserByNameAndPwd [post]
+func FindUserByNameAndPwd(c *gin.Context) {
+	data := models.User{}
+
+	//name := c.Query("name")
+	//password := c.Query("password")
+	name := c.Request.FormValue("name")
+	password := c.Request.FormValue("password")
+	fmt.Println(models.FindUserByName(name))
+	user := models.FindUserByName(name)[0]
+	if user.Name == "" {
+		c.JSON(200, gin.H{
+			"code":    -1, //  0成功   -1失败
+			"message": "该用户不存在",
+			"data":    data,
+		})
+		return
+	}
+
+	flag := (password == user.Password) // utils.ValidPassword(password, user.Salt, user.Password)
+	if !flag {
+		c.JSON(200, gin.H{
+			"code":    -1, //  0成功   -1失败
+			"message": "密码不正确",
+			"data":    data,
+		})
+		return
+	}
+	// pwd := utils.MakePassword(password, user.Salt)
+	data = user
+
+	c.JSON(200, gin.H{
+		"code":    0, //  0成功   -1失败
+		"message": "登录成功",
+		"data":    data,
 	})
 }
 
@@ -72,23 +117,24 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	if len(models.FindUserByEmail(user.Email)) != 0 {
-		c.JSON(400, gin.H{
-			"message": "email has been register!",
-		})
-		return
-	}
+	// if len(models.FindUserByEmail(user.Email)) != 0 {
+	// 	c.JSON(400, gin.H{
+	// 		"message": "email has been register!",
+	// 	})
+	// 	return
+	// }
 
-	if len(models.FindUserByPhone(user.Phone)) != 0 {
-		c.JSON(400, gin.H{
-			"message": "phone has been register!",
-		})
-		return
-	}
+	// if len(models.FindUserByPhone(user.Phone)) != 0 {
+	// 	c.JSON(400, gin.H{
+	// 		"message": "phone has been register!",
+	// 	})
+	// 	return
+	// }
 
 	user.Password = password
 	_ = models.CreateUser(user)
 	c.JSON(200, gin.H{
+		"code":    "200",
 		"message": "success",
 	})
 }
@@ -133,4 +179,15 @@ func UpdateUser(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "success",
 	})
+}
+
+func SearchFriends(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Request.FormValue("userId"))
+	users := models.SearchFriend(uint(id))
+	// c.JSON(200, gin.H{
+	// 	"code":    0, //  0成功   -1失败
+	// 	"message": "查询好友列表成功！",
+	// 	"data":    users,
+	// })
+	utils.RespOKList(c.Writer, users, len(users))
 }
